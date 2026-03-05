@@ -9,25 +9,38 @@ app.set("trust proxy", 1);
 
 const limiter = rateLimit({
     windowMs: 60 * 1000,
-    max: 5,
+    max: 2,
     message: { error: "Too many requests" }
 });
 
 app.use("/contact", limiter);
-
 app.use(cors({
     origin: "https://portfolio.hampternom.nl", // for usage replace with your own domain :)
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"]
 }));
-
 app.use(express.json());
+
 const WEBHOOK_URL = process.env.WEBHOOK_URL;
+
+function containsLinks(text) {
+    return /https?:\/\/[^\s]+/gi.test(text) ||
+           /www\.[^\s]+/gi.test(text) ||
+           /discord\.gg\/[^\s]+/gi.test(text) ||
+           /<[^>]+>/g.test(text);
+}
+
 app.post("/contact", async (req, res) => {
     const { name, email, message } = req.body;
+
     if (!name || !email || !message) {
         return res.status(400).json({ error: "missing fields" });
     }
+
+    if (containsLinks(name) || containsLinks(email) || containsLinks(message)) {
+        return res.status(400).json({ error: "links are not allowed" });
+    }
+
     try {
         await axios.post(WEBHOOK_URL, {
             content: `New message\n\n${name}\n${email}\n${message}`
@@ -38,6 +51,7 @@ app.post("/contact", async (req, res) => {
         res.status(500).json({ error: "webhook failed" });
     }
 });
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`);
