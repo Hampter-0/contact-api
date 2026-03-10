@@ -62,13 +62,12 @@ Response:
 ### Example reverse proxy configs
 
 ## Nginx:
-
+```
 location /contact {
     # Replace 'localhost:3001' with the host and port where your Node.js app runs
     # For example, if your app runs on port 4000: proxy_pass http://localhost:4000/contact;
     # Keep the '/contact' at the end if your Node route is /contact
     proxy_pass http://localhost:3001/contact;
-
     # Standard headers for websockets and reverse proxy
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
@@ -76,12 +75,14 @@ location /contact {
     proxy_set_header Host $host;
     proxy_cache_bypass $http_upgrade;
 }
-
+```
 Optional HTTPS: with Lets Encrypt:
 
 sudo certbot --nginx -d api.myportfolio.com
 
 ##Apache:
+
+```
 <VirtualHost *:443>
     # Replace with your real domain
     ServerName api.myportfolio.com
@@ -104,7 +105,7 @@ sudo certbot --nginx -d api.myportfolio.com
     ErrorLog ${APACHE_LOG_DIR}/api-ssl-error.log
     CustomLog ${APACHE_LOG_DIR}/api-ssl-access.log combined
 </VirtualHost>
-
+```
 for apache also enable Apache modules:
 
 sudo a2enmod proxy proxy_http ssl
