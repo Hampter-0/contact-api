@@ -80,7 +80,7 @@ Optional HTTPS: with Lets Encrypt:
 
 sudo certbot --nginx -d api.myportfolio.com
 
-##Apache:
+## Apache:
 
 ```
 <VirtualHost *:443>
