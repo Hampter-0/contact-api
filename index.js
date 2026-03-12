@@ -36,8 +36,16 @@ app.post("/contact", async (req, res) => {
     if (!name || !email || !message) {
         return res.status(400).json({ error: "missing fields" });
     }
+    
+    if (name.length  > 100 || email.length > 100 || message.length > 100) {
+        return res.status(400).json({ error: "to many caracters" });
+    }
 
-    if (containsLinks(name) || containsLinks(email) || containsLinks(message)) {
+    if (!email.includes("@")) {
+        return res.status(400).json({ error: "invalid email" });
+    }
+
+    if (containsLinks(name) || containsLinks(message)) {
         return res.status(400).json({ error: "links are not allowed" });
     }
 
