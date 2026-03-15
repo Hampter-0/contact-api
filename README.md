@@ -109,6 +109,7 @@ sudo certbot --nginx -d api.myportfolio.com
 for apache also enable Apache modules:
 
 sudo a2enmod proxy proxy_http ssl
+
 sudo systemctl restart apache2
 
 ## License
