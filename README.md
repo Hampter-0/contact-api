@@ -8,6 +8,7 @@ A REST API built with Node.js and Express that handles contact form submissions 
 - Rate limiting (2 requests per minute per IP) u can change this in the index.js to ur liking :)
 - CORS protection
 - ENV with dotenv
+- Email confirmation
 
 ## tech used 
 
