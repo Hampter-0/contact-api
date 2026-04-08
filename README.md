@@ -17,6 +17,8 @@ A REST API built with Node.js and Express that handles contact form submissions 
 - Axios
 - express-rate-limit
 - dotenv
+- cors
+- nodemailer
 
 ## setup
 
