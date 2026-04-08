@@ -5,6 +5,12 @@ const cors = require("cors");
 require("dotenv").config();
 const app = express();
 
+const SMTP_HOST = process.env.SMTP_HOST;
+const SMTP_PORT = process.env.SMTP_PORT;
+const SMTP_SECURE = process.env.SMTP_SECURE === "true";
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS;
+
 app.set("trust proxy", 1);
 
 const limiter = rateLimit({
@@ -25,9 +31,9 @@ const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
 function containsLinks(text) {
     return /https?:\/\/[^\s]+/gi.test(text) ||
-           /www\.[^\s]+/gi.test(text) ||
-           /discord\.gg\/[^\s]+/gi.test(text) ||
-           /<[^>]+>/g.test(text);
+        /www\.[^\s]+/gi.test(text) ||
+        /discord\.gg\/[^\s]+/gi.test(text) ||
+        /<[^>]+>/g.test(text);
 }
 
 app.post("/contact", async (req, res) => {
@@ -36,8 +42,8 @@ app.post("/contact", async (req, res) => {
     if (!name || !email || !message) {
         return res.status(400).json({ error: "missing fields" });
     }
-    
-    if (name.length  > 100 || email.length > 100 || message.length > 100) {
+
+    if (name.length > 100 || email.length > 100 || message.length > 100) {
         return res.status(400).json({ error: "to many caracters" });
     }
 
@@ -53,6 +59,32 @@ app.post("/contact", async (req, res) => {
         await axios.post(WEBHOOK_URL, {
             content: `New message\n\n${name}\n${email}\n${message}`
         });
+
+        const nodemailer = require("nodemailer");
+
+        async function sendMail() {
+            const transporter = nodemailer.createTransport({
+                host: SMTP_HOST,
+                port: SMTP_PORT,
+                secure: SMTP_SECURE,
+                auth: {
+                    user: SMTP_USER,
+                    pass: SMTP_PASS
+                }
+            });
+
+            const info = await transporter.sendMail({
+                from: `"HampterNom (portfolio contact)" <${process.env.SMTP_FROM}>`,
+                to: email,
+                subject: "confirmation",
+                text: "confirmation",
+                html: "<b>i have recieved ur message! ill try and reply within 48 hours :)</b>"
+            });
+
+            console.log("Message sent:", info.messageId);
+        }
+
+        sendMail().catch(console.error);
         res.json({ success: true });
     } catch (err) {
         console.error(err);
