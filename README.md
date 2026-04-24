@@ -25,7 +25,7 @@ A REST API built with Node.js and Express that handles contact form submissions 
 ## what u need to start
 
 - Node.js installed
-- A Discord webhook URL and ofcoure a server :)
+- A Discord webhook URL and ofcourse a discord server :)
 
 ### Installation
 
