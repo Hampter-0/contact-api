@@ -74,11 +74,87 @@ app.post("/contact", async (req, res) => {
             });
 
             const info = await transporter.sendMail({
-                from: `"HampterNom (portfolio contact)" <${process.env.SMTP_FROM}>`,
+                from: `"HampterNom.nl (portfolio contact)" <${process.env.SMTP_FROM}>`,
                 to: email,
                 subject: "confirmation",
                 text: "confirmation",
-                html: "<b>i have recieved ur message! ill try and reply within 48 hours :)</b>"
+                html: `
+    <p>
+        <b>I have received your message! I'll try and reply within 48 hours :)</b>
+    </p>
+
+    <p>&nbsp;</p>
+
+    <div id="_rc_sig">
+        --
+        <br />
+
+        <table
+            style="font-family: Arial, Helvetica, sans-serif; color: #333333;"
+            border="0"
+            cellspacing="0"
+            cellpadding="0"
+        >
+            <tbody>
+                <tr>
+                    <td style="padding-bottom: 4px;">
+                        <span style="font-weight: bold; font-size: 14px; color: #000000;">
+                            Support Team
+                        </span>
+                        <br />
+                        <span style="font-size: 12px; color: #888888;">
+                            Hampternom.nl
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding-bottom: 10px;">
+                        <span style="font-size: 12px; font-style: italic; color: #888888;">
+                            Kind regards,
+                        </span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 6px 0;">
+                        <img
+                            style="display: block;"
+                            src="https://hampternom.nl/assets/logos/hampternom.nl.png"
+                            alt="Hampternom.nl"
+                            width="140"
+                        />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding-top: 10px; border-top: 1px solid #dddddd;">
+                        <span style="font-size: 12px; color: #333333;">
+                            Contact us here:
+                            <a
+                                style="color: #7c3aed; font-weight: bold; text-decoration: none;"
+                                href="mailto:support@hampternom.nl"
+                            >
+                                support@hampternom.nl
+                            </a>
+                        </span>
+
+                        <br />
+
+                        <span style="font-size: 12px; color: #333333;">
+                            <a
+                                style="color: #7c3aed; font-weight: bold; text-decoration: none;"
+                                href="https://hampternom.nl"
+                            >
+                                HAMPTERNOM.NL
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+`
             });
 
             console.log("Message sent:", info.messageId);
