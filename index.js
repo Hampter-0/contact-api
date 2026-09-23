@@ -160,7 +160,7 @@ app.post("/contact", async (req, res) => {
                     <td style="padding-top: 10px; border-top: 1px solid #dddddd;">
                         <span style="font-size: 12px; color: #333333;">
                             Contact us here:
-                            
+                            <a
                                 style="color: #7c3aed; font-weight: bold; text-decoration: none;"
                                 href="mailto:support@hampternom.nl"
                             >
@@ -171,7 +171,7 @@ app.post("/contact", async (req, res) => {
                         <br />
 
                         <span style="font-size: 12px; color: #333333;">
-                            
+                            <a
                                 style="color: #7c3aed; font-weight: bold; text-decoration: none;"
                                 href="https://hampternom.nl"
                             >
