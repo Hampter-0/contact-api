@@ -10,6 +10,7 @@ const SMTP_PORT = process.env.SMTP_PORT;
 const SMTP_SECURE = process.env.SMTP_SECURE === "true";
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
+const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
 
 app.set("trust proxy", 1);
 
@@ -36,8 +37,27 @@ function containsLinks(text) {
         /<[^>]+>/g.test(text);
 }
 
+async function verifyTurnstile(token, remoteIp) {
+    try {
+        const params = new URLSearchParams();
+        params.append("secret", TURNSTILE_SECRET_KEY);
+        params.append("response", token);
+        if (remoteIp) params.append("remoteip", remoteIp);
+
+        const { data } = await axios.post(
+            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            params
+        );
+
+        return data.success === true;
+    } catch (err) {
+        console.error("Turnstile verify error:", err);
+        return false;
+    }
+}
+
 app.post("/contact", async (req, res) => {
-    const { name, email, message } = req.body;
+    const { name, email, message, turnstileToken } = req.body;
 
     if (!name || !email || !message) {
         return res.status(400).json({ error: "missing fields" });
@@ -53,6 +73,15 @@ app.post("/contact", async (req, res) => {
 
     if (containsLinks(name) || containsLinks(message)) {
         return res.status(400).json({ error: "links are not allowed" });
+    }
+
+    if (!turnstileToken) {
+        return res.status(400).json({ error: "missing verification token" });
+    }
+
+    const isHuman = await verifyTurnstile(turnstileToken, req.ip);
+    if (!isHuman) {
+        return res.status(400).json({ error: "verification failed" });
     }
 
     try {
@@ -131,7 +160,7 @@ app.post("/contact", async (req, res) => {
                     <td style="padding-top: 10px; border-top: 1px solid #dddddd;">
                         <span style="font-size: 12px; color: #333333;">
                             Contact us here:
-                            <a
+                            
                                 style="color: #7c3aed; font-weight: bold; text-decoration: none;"
                                 href="mailto:support@hampternom.nl"
                             >
@@ -142,7 +171,7 @@ app.post("/contact", async (req, res) => {
                         <br />
 
                         <span style="font-size: 12px; color: #333333;">
-                            <a
+                            
                                 style="color: #7c3aed; font-weight: bold; text-decoration: none;"
                                 href="https://hampternom.nl"
                             >
