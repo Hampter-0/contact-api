@@ -30,7 +30,7 @@ Everything is configured with a `.env` file, and most parts can be switched on o
 
 ### what u need
 
-- Node.js 20 or newer
+- Node.js 22.12 or newer
 - A Discord webhook URL (and ofcourse a discord server :) )
 - A Cloudflare Turnstile secret key (or turn Turnstile off, see below)
 - SMTP details if you want confirmation mails
