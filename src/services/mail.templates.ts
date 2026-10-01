@@ -92,7 +92,7 @@ function buildSignatureHtml(): string {
         style="font-size: 12px; color: ${accent}; font-weight: bold; text-decoration: none;"
         href="${escapeHtml(sig.websiteUrl)}"
       >
-        ${escapeHtml(sig.websiteUrl.replace(/^https?:\/\//, ""))}
+        ${escapeHtml(sig.websiteUrl)}
       </a>`;
   }
 
