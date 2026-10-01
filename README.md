@@ -122,12 +122,17 @@ The signature is built from these variables. Everything is optional, leave a val
 
 | Variable | What it does |
 |---|---|
-| `SIGNATURE_TITLE` | bold title, for example `Support Team` |
+| `SIGNATURE_NAME` | bold black first line, for example your name or team name |
+| `SIGNATURE_TITLE` | bold grey line under the name, for example a role |
 | `SIGNATURE_TAGLINE` | small italic line, for example `Kind regards,` |
 | `SIGNATURE_LOGO_URL` | full url to a logo image |
 | `SIGNATURE_LOGO_WIDTH` | logo width in pixels (default `140`) |
+| `SIGNATURE_ADDRESS_LINE1` / `SIGNATURE_ADDRESS_LINE2` | address shown in the left column |
+| `SIGNATURE_PHONE` | phone number shown in the right column |
 | `SIGNATURE_CONTACT_EMAIL` | contact address shown as a mailto link |
 | `SIGNATURE_WEBSITE_URL` | website link |
+| `SIGNATURE_DISCORD_LINK` | discord invite link |
+| `SIGNATURE_FOOTER_NOTE` | small grey note at the very bottom |
 | `SIGNATURE_ACCENT_COLOR` | link color (default `#7c3aed`) |
 
 ## API

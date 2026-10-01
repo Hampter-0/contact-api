@@ -51,12 +51,18 @@ export const config = {
   },
 
   signature: {
+    name: env.SIGNATURE_NAME,
     title: env.SIGNATURE_TITLE,
     tagline: env.SIGNATURE_TAGLINE,
     logoUrl: env.SIGNATURE_LOGO_URL,
     logoWidth: env.SIGNATURE_LOGO_WIDTH,
+    addressLine1: env.SIGNATURE_ADDRESS_LINE1,
+    addressLine2: env.SIGNATURE_ADDRESS_LINE2,
+    phone: env.SIGNATURE_PHONE,
     contactEmail: env.SIGNATURE_CONTACT_EMAIL,
     websiteUrl: env.SIGNATURE_WEBSITE_URL,
+    discordLink: env.SIGNATURE_DISCORD_LINK,
+    footerNote: env.SIGNATURE_FOOTER_NOTE,
     accentColor: env.SIGNATURE_ACCENT_COLOR,
   },
 };

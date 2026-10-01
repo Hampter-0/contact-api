@@ -146,18 +146,21 @@ export const env = {
   // confirmation mail
   BRAND_NAME: getStringWithDefault("BRAND_NAME", "My Portfolio"),
   EMAIL_SUBJECT: getStringWithDefault("EMAIL_SUBJECT", "I received your message"),
-  EMAIL_BODY: getStringWithDefault(
-    "EMAIL_BODY",
-    "I have received your message! I'll try to reply within 48 hours :)",
-  ),
+  EMAIL_BODY: getStringWithDefault("EMAIL_BODY", "I have received your message! I'll try to reply within 48 hours :)"),
 
   // signature
+  SIGNATURE_NAME: getString("SIGNATURE_NAME"),
   SIGNATURE_TITLE: getString("SIGNATURE_TITLE"),
   SIGNATURE_TAGLINE: getString("SIGNATURE_TAGLINE"),
   SIGNATURE_LOGO_URL: getString("SIGNATURE_LOGO_URL"),
   SIGNATURE_LOGO_WIDTH: getNumber("SIGNATURE_LOGO_WIDTH", 140),
+  SIGNATURE_ADDRESS_LINE1: getString("SIGNATURE_ADDRESS_LINE1"),
+  SIGNATURE_ADDRESS_LINE2: getString("SIGNATURE_ADDRESS_LINE2"),
+  SIGNATURE_PHONE: getString("SIGNATURE_PHONE"),
   SIGNATURE_CONTACT_EMAIL: getString("SIGNATURE_CONTACT_EMAIL"),
   SIGNATURE_WEBSITE_URL: getString("SIGNATURE_WEBSITE_URL"),
+  SIGNATURE_DISCORD_LINK: getString("SIGNATURE_DISCORD_LINK"),
+  SIGNATURE_FOOTER_NOTE: getString("SIGNATURE_FOOTER_NOTE"),
   SIGNATURE_ACCENT_COLOR: getStringWithDefault("SIGNATURE_ACCENT_COLOR", "#7c3aed"),
 };
 

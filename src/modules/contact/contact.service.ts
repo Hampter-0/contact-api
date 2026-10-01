@@ -28,7 +28,7 @@ export async function handleContactSubmission(
     }
   }
 
-  // fire and forget, these should never block or fail the response
+  // these should never block or fail the response
   sendDiscordNotification(submission.name, submission.email, submission.message).catch(
     (err: unknown) => {
       logger.error("discord notification failed", err);
