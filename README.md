@@ -50,13 +50,9 @@ Everything is configured with a `.env` file, and most parts can be switched on o
    npm install
 ```
 
-3. Copy the example env file and fill it in
+   This also runs `npm run setup` automatically, which creates `.env` from `.env.example` if you don't have one yet.
 
-```
-   cp .env.example .env
-```
-
-   (on Windows PowerShell: `Copy-Item .env.example .env`)
+3. Fill in your `.env` with your real values (Discord webhook, Turnstile key, SMTP details, etc)
 
 4. Start the server
 
@@ -75,6 +71,27 @@ If something in your `.env` is missing or wrong, the server stops on startup and
 | `npm start` | run the compiled build (production) |
 | `npm run typecheck` | check types without building |
 | `npm test` | run the tests |
+| `npm run setup` | copy `.env.example` to `.env` if it doesn't exist yet (runs automatically after `npm install`) |
+
+## running with docker
+
+1. Copy `.env.example` to `.env` (or run `npm run setup`) and fill it in
+2. Start the container
+
+```
+   docker compose up --build -d
+```
+
+By default the container only binds to `127.0.0.1:3001`, so put a reverse proxy (nginx, Caddy, etc) in front of it for real traffic. See the reverse proxy examples below.
+
+### updating
+
+```
+git pull
+docker compose up --build -d
+```
+
+This rebuilds the image with the new code and restarts the container. There's no separate image to pull, the container is built from source.
 
 ## configuration
 
@@ -169,6 +186,75 @@ Errors come back as `{ "error": "..." }`:
 | `400` | invalid input, links in the message, or failed Turnstile check |
 | `429` | too many requests |
 | `500` | something broke on the server |
+
+## frontend example
+
+A minimal HTML form that posts to `/contact`, including the Turnstile widget:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contact</title>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+  <form id="contact-form">
+    <input type="text" name="name" placeholder="Name" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <textarea name="message" placeholder="Message" required></textarea>
+
+    <!-- replace with your own Turnstile site key -->
+    <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY"></div>
+
+    <button type="submit">Send</button>
+  </form>
+
+  <p id="status"></p>
+
+  <script>
+    const form = document.getElementById("contact-form");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const payload = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        message: formData.get("message"),
+        turnstileToken: formData.get("cf-turnstile-response"),
+      };
+
+      status.textContent = "Sending...";
+
+      try {
+        const response = await fetch("https://api.myportfolio.com/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          status.textContent = "Message sent!";
+          form.reset();
+        } else {
+          status.textContent = data.error || "Something went wrong.";
+        }
+      } catch (err) {
+        status.textContent = "Could not reach the server.";
+      }
+    });
+  </script>
+</body>
+</html>
+```
+
+Replace `https://api.myportfolio.com/contact` with your own API URL, and the Turnstile site key with your own.
 
 ## project structure
 

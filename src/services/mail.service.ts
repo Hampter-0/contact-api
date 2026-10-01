@@ -15,7 +15,7 @@ function createTransporter() {
   });
 }
 
-// sends the "i received your message" confirmation mail to the person
+// sends the confirmation mail to the person
 // who filled in the contact form. does nothing if the feature is off.
 // runs in the background, errors are logged but never thrown, so a
 // failed confirmation mail never breaks the /contact request itself

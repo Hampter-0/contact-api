@@ -4,6 +4,8 @@
   "description": "Small contact form API (Express + TypeScript)",
   "main": "dist/server.js",
   "scripts": {
+    "setup": "node scripts/setup.js",
+    "postinstall": "node scripts/setup.js",
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/server.js",
