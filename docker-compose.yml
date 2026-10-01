@@ -1,0 +1,8 @@
+services:
+  contact-api:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      # only reachable from the host itself, put nginx / a reverse proxy in front
+      - "127.0.0.1:3001:3001"
