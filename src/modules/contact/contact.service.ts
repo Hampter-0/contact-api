@@ -1,9 +1,10 @@
 import { config } from "../../config";
+import { contactFields } from "../../config/fields.config";
 import { AppError } from "../../lib/errors";
 import { logger } from "../../lib/logger";
-import { verifyTurnstileToken } from "../../services/turnstile.service";
 import { sendDiscordNotification } from "../../services/discord.service";
 import { sendConfirmationEmail } from "../../services/mail.service";
+import { verifyTurnstileToken } from "../../services/turnstile.service";
 import { containsLinks } from "./contact.filters";
 import type { ContactSubmission } from "./contact.types";
 
@@ -15,8 +16,16 @@ export async function handleContactSubmission(
   remoteIp: string | undefined,
 ): Promise<void> {
   if (config.features.linkFilter) {
-    if (containsLinks(submission.name) || containsLinks(submission.message)) {
-      throw new AppError(400, "links are not allowed");
+    for (const field of contactFields) {
+      if (field.linkFilterExempt) {
+        continue;
+      }
+
+      const value = submission[field.key];
+
+      if (value && containsLinks(value)) {
+        throw new AppError(400, "links are not allowed");
+      }
     }
   }
 
@@ -29,13 +38,17 @@ export async function handleContactSubmission(
   }
 
   // these should never block or fail the response
-  sendDiscordNotification(submission.name, submission.email, submission.message).catch(
-    (err: unknown) => {
-      logger.error("discord notification failed", err);
-    },
-  );
-
-  sendConfirmationEmail(submission.email).catch((err: unknown) => {
-    logger.error("confirmation email failed", err);
+  sendDiscordNotification(submission).catch((err: unknown) => {
+    logger.error("discord notification failed", err);
   });
+
+  // email is only sent if an "email" field is actually configured and filled in,
+  // since fields.config.ts could theoretically be set up without one
+  const email = submission.email;
+
+  if (email) {
+    sendConfirmationEmail(email).catch((err: unknown) => {
+      logger.error("confirmation email failed", err);
+    });
+  }
 }

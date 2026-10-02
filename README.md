@@ -119,9 +119,6 @@ Set these to `true` or `false`.
 | `CORS_ORIGINS` | `http://localhost:5173` | allowed origins, comma separated |
 | `RATE_LIMIT_WINDOW_SECONDS` | `60` | rate limit window |
 | `RATE_LIMIT_MAX` | `2` | max requests per window per IP |
-| `MAX_NAME_LENGTH` | `100` | max characters in name |
-| `MAX_EMAIL_LENGTH` | `100` | max characters in email |
-| `MAX_MESSAGE_LENGTH` | `1000` | max characters in message |
 
 Set `CORS_ORIGINS` to your own frontend domain, or the browser will block the requests.
 
@@ -132,6 +129,32 @@ Set `CORS_ORIGINS` to your own frontend domain, or the browser will block the re
 | `BRAND_NAME` | name shown as sender and in the signature |
 | `EMAIL_SUBJECT` | subject of the mail |
 | `EMAIL_BODY` | the message in the mail |
+
+### contact form fields
+
+The fields the form accepts (and validates) are declared in `src/config/fields.config.ts`, not in `.env`. Add, remove, or edit fields there, the validation, link filter, and Discord message all adjust automatically.
+
+```ts
+export const contactFields: ContactFieldOption[] = [
+  { key: "name", label: "Name", type: "text", required: true, maxLength: 100 },
+  { key: "email", label: "Email", type: "email", required: true, maxLength: 100 },
+  { key: "message", label: "Message", type: "textarea", required: true, maxLength: 1000 },
+];
+```
+
+Each field has:
+
+| Property | Required | What it does |
+|---|---|---|
+| `key` | yes | internal name, used in the request JSON and everywhere else |
+| `label` | yes | human-readable name shown in Discord and email |
+| `type` | yes | `text`, `email`, `textarea`, or `select` |
+| `required` | yes | whether the field must be filled in |
+| `maxLength` | for text/email/textarea | max characters allowed |
+| `options` | for `select` only | the allowed values |
+| `linkFilterExempt` | no, default `false` | skip the link filter for this field (e.g. a "website" field where links are expected) |
+
+If you add or remove fields here, remember to update your own frontend form to match (same `key` in the JSON body sent to `/contact`).
 
 ### email signature
 

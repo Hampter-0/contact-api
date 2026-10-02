@@ -16,12 +16,6 @@ export const config = {
     emailSignature: env.FEATURE_EMAIL_SIGNATURE,
   },
 
-  limits: {
-    name: env.MAX_NAME_LENGTH,
-    email: env.MAX_EMAIL_LENGTH,
-    message: env.MAX_MESSAGE_LENGTH,
-  },
-
   rateLimit: {
     windowMs: env.RATE_LIMIT_WINDOW_SECONDS * 1000,
     max: env.RATE_LIMIT_MAX,
