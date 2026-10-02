@@ -1,14 +1,28 @@
 import { config } from "../config";
 import { DISCORD_MAX_CONTENT_LENGTH, HTTP_TIMEOUT_MS } from "../config/constants";
+import { contactFields, type ContactSubmission } from "../config/fields.config";
 import { logger } from "../lib/logger";
+
+// builds the discord message body by looping over the configured fields,
+// in the order they're declared in fields.config.ts. fields with no
+// value (optional and left empty) are skipped.
+function buildContent(submission: ContactSubmission): string {
+  const lines: string[] = [];
+
+  for (const field of contactFields) {
+    const value = submission[field.key];
+
+    if (value) {
+      lines.push(`**${field.label}:** ${value}`);
+    }
+  }
+
+  return `New message\n\n${lines.join("\n")}`;
+}
 
 // sends the contact form details to a discord webhook.
 // does nothing if the feature is off
-export async function sendDiscordNotification(
-  name: string,
-  email: string,
-  message: string,
-): Promise<void> {
+export async function sendDiscordNotification(submission: ContactSubmission): Promise<void> {
   if (!config.features.discordWebhook) {
     return;
   }
@@ -20,7 +34,7 @@ export async function sendDiscordNotification(
     return;
   }
 
-  let content = `New message\n\n${name}\n${email}\n${message}`;
+  let content = buildContent(submission);
 
   if (content.length > DISCORD_MAX_CONTENT_LENGTH) {
     content = content.slice(0, DISCORD_MAX_CONTENT_LENGTH - 3) + "...";

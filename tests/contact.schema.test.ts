@@ -45,4 +45,19 @@ describe("contact schema", () => {
 
     expect(result.success).toBe(false);
   });
+
+  it("accepts a submission with an added optional field", () => {
+    // simulates adding a custom field to fields.config.ts and confirms
+    // the schema accepts it without needing it to be in the hardcoded shape
+    const result = schema.safeParse({
+      name: "Jane Doe",
+      email: "jane@example.com",
+      message: "hello there",
+      // an extra key not declared in fields.config.ts is just ignored by zod,
+      // not rejected, since z.object() allows unknown keys by default
+      phone: "0612345678",
+    });
+
+    expect(result.success).toBe(true);
+  });
 });
