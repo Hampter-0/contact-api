@@ -1,6 +1,19 @@
+<div align="center">
+
 # contact-api
 
-A small contact form API built with Node.js, Express and TypeScript. It takes submissions from my portfolio, checks them, and forwards them to a Discord channel via webhook. It can also send the visitor a confirmation mail.
+[![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![Vitest](https://img.shields.io/badge/tests-Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![License](https://img.shields.io/github/license/Hampter-0/contact-api?color=blue)](https://github.com/Hampter-0/contact-api/blob/main/LICENSE)
+
+**A small, configurable contact form API built with Node.js, Express and TypeScript.**
+
+Takes submissions from your portfolio, validates and protects them,
+then forwards them to Discord and optionally sends a confirmation email.
+
+</div>
 
 Everything is configured with a `.env` file, and most parts can be switched on or off without touching the code.
 
