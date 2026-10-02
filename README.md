@@ -13,9 +13,9 @@
 Takes submissions from your portfolio, validates and protects them,
 then forwards them to Discord and optionally sends a confirmation email.
 
-</div>
-
 Everything is configured with a `.env` file, and most parts can be switched on or off without touching the code.
+
+</div>
 
 ## features
 
