@@ -26,6 +26,8 @@ Everything is configured with a `.env` file, and most parts can be switched on o
 - Input validation and length limits
 - CORS protection
 - Confirmation email with an optional signature
+- Editable email templates (plain HTML files, no code required)
+- Configurable form fields, add or remove fields without touching validation code
 - All of it toggleable through `.env`
 
 ## tech used
@@ -35,6 +37,7 @@ Everything is configured with a `.env` file, and most parts can be switched on o
 - zod (validation)
 - express-rate-limit
 - nodemailer
+- mustache (email templating)
 - cors
 - dotenv
 - vitest (tests)
@@ -43,10 +46,12 @@ Everything is configured with a `.env` file, and most parts can be switched on o
 
 ### what u need
 
-- Node.js 22.12 or newer
+- [Node.js](https://nodejs.org/) 22.12 or newer
+- A package manager: [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (comes with Node.js), [pnpm](https://pnpm.io/installation), or [yarn](https://yarnpkg.com/getting-started/install), whichever you prefer
 - A Discord webhook URL (and ofcourse a discord server :) )
 - A Cloudflare Turnstile secret key (or turn Turnstile off, see below)
 - SMTP details if you want confirmation mails
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) if you'd rather run it containerized, see [running with docker](#running-with-docker)
 
 ### installation
 
@@ -57,38 +62,63 @@ Everything is configured with a `.env` file, and most parts can be switched on o
    cd contact-api
 ```
 
-2. Install dependencies
+2. Install dependencies, with whichever package manager you use:
 
+   **npm**
 ```
    npm install
 ```
 
-   This also runs `npm run setup` automatically, which creates `.env` from `.env.example` if you don't have one yet.
-
-3. Fill in your `.env` with your real values (Discord webhook, Turnstile key, SMTP details, etc)
-
-4. Start the server
-
+   **pnpm**
 ```
-   npm run dev
+   pnpm install
 ```
+
+   **yarn**
+```
+   yarn install
+```
+
+3. Create your `.env` file:
+
+   | | Command |
+   |---|---|
+   | npm | `npm run setup` |
+   | pnpm | `pnpm setup` |
+   | yarn | `yarn setup` |
+
+   This copies `.env.example` to `.env` if you don't have one yet (it won't overwrite an existing `.env`).
+
+4. Fill in your `.env` with your real values (Discord webhook, Turnstile key, SMTP details, etc)
+
+5. Start the server
+
+   | | Command |
+   |---|---|
+   | npm | `npm run dev` |
+   | pnpm | `pnpm dev` |
+   | yarn | `yarn dev` |
 
 If something in your `.env` is missing or wrong, the server stops on startup and tells you exactly what.
 
 ### scripts
 
-| Command | What it does |
+Run with `npm run <script>`, `pnpm <script>`, or `yarn <script>`.
+
+| Script | What it does |
 |---|---|
-| `npm run dev` | run with auto restart (development) |
-| `npm run build` | compile TypeScript to `dist/` |
-| `npm start` | run the compiled build (production) |
-| `npm run typecheck` | check types without building |
-| `npm test` | run the tests |
-| `npm run setup` | copy `.env.example` to `.env` if it doesn't exist yet (runs automatically after `npm install`) |
+| `dev` | run with auto restart (development) |
+| `build` | compile TypeScript to `dist/` |
+| `start` | run the compiled build (production) |
+| `typecheck` | check types without building |
+| `test` | run the tests |
+| `setup` | copy `.env.example` to `.env` if it doesn't exist yet |
 
 ## running with docker
 
-1. Copy `.env.example` to `.env` (or run `npm run setup`) and fill it in
+Needs [Docker](https://docs.docker.com/get-docker/) and the [Docker Compose plugin](https://docs.docker.com/compose/install/) (bundled with Docker Desktop, installed separately on most Linux distros).
+
+1. Run `npm run setup` (or copy `.env.example` to `.env` yourself) and fill it in
 2. Start the container
 
 ```
@@ -187,6 +217,21 @@ The signature is built from these variables. Everything is optional, leave a val
 | `SIGNATURE_DISCORD_LINK` | discord invite link |
 | `SIGNATURE_FOOTER_NOTE` | small grey note at the very bottom |
 | `SIGNATURE_ACCENT_COLOR` | link color (default `#7c3aed`) |
+
+### customizing the email template
+
+The confirmation email isn't hardcoded in TypeScript, it's two plain HTML files in `templates/`:
+
+| File | What it is |
+|---|---|
+| `templates/confirmation-email.html` | the full email body |
+| `templates/signature.html` | just the signature block |
+
+Both use [Mustache](https://mustache.github.io/) syntax, `{{variable}}` prints a value, `{{#variable}}...{{/variable}}` only shows that block when the variable has a value, `{{{variable}}}` prints raw HTML without escaping it (only used for the signature, which is already-safe HTML built by the app).
+
+To restyle the email (colors, spacing, add a paragraph, rearrange the layout), just edit these HTML files directly, no TypeScript knowledge needed. To change the actual *text* (the message body, the signature name/title/etc), use the `.env` variables above instead, that's simpler for day-to-day changes.
+
+> **Note:** if you use VS Code with a Statamic/Antlers extension installed, it may misinterpret the `{{# }}` Mustache syntax as its own comment syntax and grey out part of the file. This is a cosmetic editor issue only, it doesn't affect how the email renders. Disable the Antlers extension for this workspace (gear icon next to the extension → "Disable (Workspace)") if it bothers you.
 
 ## API
 
@@ -296,7 +341,7 @@ Replace `https://api.myportfolio.com/contact` with your own API URL, and the Tur
 
 ```
 src/
-├── config/        env parsing, constants and the config object
+├── config/        env parsing, constants, feature fields, and the config object
 ├── lib/           small helpers (errors, logger, html escape)
 ├── middleware/    cors, rate limit, error handling
 ├── modules/
@@ -304,6 +349,7 @@ src/
 ├── services/      turnstile, discord and mail
 ├── app.ts         builds the express app
 └── server.ts      starts the server
+templates/         editable html email templates (mustache)
 tests/             vitest tests
 ```
 
