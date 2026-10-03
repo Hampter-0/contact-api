@@ -1,0 +1,77 @@
+{{#name}}
+<span style="font-weight: bold; font-size: 14px; color: #000000;">{{name}}</span>
+<br />
+{{/name}}
+{{#title}}
+<span style="font-weight: bold; font-size: 13px; color: #888888;">{{title}}</span>
+<br />
+{{/title}}
+{{#tagline}}
+<tr>
+  <td style="padding-bottom: 10px;">
+    <span style="font-size: 12px; font-style: italic; color: #888888;">{{tagline}}</span>
+  </td>
+</tr>
+{{/tagline}}
+{{#logoUrl}}
+<tr>
+  <td style="padding: 6px 0;">
+    <img style="display: block;" src="{{logoUrl}}" alt="{{name}}{{title}}" width="{{logoWidth}}" />
+  </td>
+</tr>
+{{/logoUrl}}
+{{#hasInfoRow}}
+<tr>
+  <td style="padding-top: 10px;">
+    <table border="0" cellspacing="0" cellpadding="0">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top; padding-right: 24px;">
+            {{#addressLine1}}
+            <span style="font-size: 12px; color: #333333; font-weight: bold;">
+              {{addressLine1}}<br />{{addressLine2}}
+            </span>
+            {{/addressLine1}}
+          </td>
+          <td style="vertical-align: top;">
+            {{#phone}}
+            <span style="font-size: 12px; color: #333333;">
+              T <span style="color: {{accentColor}}; font-weight: bold;">{{phone}}</span>
+            </span>
+            <br />
+            {{/phone}}
+            {{#websiteUrl}}
+            <a style="font-size: 12px; color: {{accentColor}}; font-weight: bold; text-decoration: none;" href="{{websiteUrl}}">
+              {{websiteDisplay}}
+            </a>
+            {{/websiteUrl}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </td>
+</tr>
+{{/hasInfoRow}}
+{{#hasFooterRow}}
+<tr>
+  <td style="padding-top: 10px; border-top: 1px solid #dddddd;">
+    {{#contactEmail}}
+    <span style="font-size: 12px; color: #333333;">
+      Contact us here:
+      <a style="color: {{accentColor}}; font-weight: bold; text-decoration: none;" href="mailto:{{contactEmail}}">{{contactEmail}}</a>
+    </span>
+    <br />
+    {{/contactEmail}}
+    {{#discordLink}}
+    <span style="font-size: 12px; color: #333333;">
+      Join our discord:
+      <a style="color: {{accentColor}}; font-weight: bold; text-decoration: none;" href="{{discordLink}}">{{discordLink}}</a>
+    </span>
+    <br />
+    {{/discordLink}}
+    {{#footerNote}}
+    <span style="font-size: 12px; color: #888888;">{{footerNote}}</span>
+    {{/footerNote}}
+  </td>
+</tr>
+{{/hasFooterRow}}
