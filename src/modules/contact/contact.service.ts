@@ -3,7 +3,7 @@ import { contactFields } from "../../config/fields.config";
 import { AppError } from "../../lib/errors";
 import { logger } from "../../lib/logger";
 import { sendDiscordNotification } from "../../services/discord.service";
-import { sendConfirmationEmail } from "../../services/mail.service";
+import { sendConfirmationEmail, sendNotificationEmail } from "../../services/mail.service";
 import { verifyTurnstileToken } from "../../services/turnstile.service";
 import { containsLinks } from "./contact.filters";
 import type { ContactSubmission } from "./contact.types";
@@ -37,13 +37,19 @@ export async function handleContactSubmission(
     }
   }
 
-  // these should never block or fail the response
+  // these should never block or fail the response, and each one is
+  // fully independent, any combination can be on or off at the same time
   sendDiscordNotification(submission).catch((err: unknown) => {
     logger.error("discord notification failed", err);
   });
 
-  // email is only sent if an "email" field is actually configured and filled in,
-  // since fields.config.ts could theoretically be set up without one
+  sendNotificationEmail(submission).catch((err: unknown) => {
+    logger.error("notification email failed", err);
+  });
+
+  // confirmation email is only sent if an "email" field is actually
+  // configured and filled in, since fields.config.ts could theoretically
+  // be set up without one
   const email = submission.email;
 
   if (email) {

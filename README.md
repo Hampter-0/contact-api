@@ -11,7 +11,7 @@
 **A small, configurable contact form API built with Node.js, Express and TypeScript.**
 
 Takes submissions from your portfolio, validates and protects them,
-then forwards them to Discord and optionally sends a confirmation email.
+then forwards them to Discord and/or email, and optionally sends the visitor a confirmation email.
 
 Everything is configured with a `.env` file, and most parts can be switched on or off without touching the code.
 
@@ -20,13 +20,14 @@ Everything is configured with a `.env` file, and most parts can be switched on o
 ## features
 
 - Discord webhook notifications
+- Email notifications to yourself, with reply-to set to the visitor
 - Cloudflare Turnstile (bot protection)
 - Rate limiting (default 2 requests per minute per IP)
 - Link filter (blocks links and html in name/message)
 - Input validation and length limits
 - CORS protection
 - Confirmation email with an optional signature
-- Editable email templates (plain HTML files, no code required)
+- Editable email and message templates
 - Configurable form fields, add or remove fields without touching validation code
 - All of it toggleable through `.env`
 
@@ -37,7 +38,7 @@ Everything is configured with a `.env` file, and most parts can be switched on o
 - zod (validation)
 - express-rate-limit
 - nodemailer
-- mustache (email templating)
+- mustache (templating)
 - cors
 - dotenv
 - vitest (tests)
@@ -48,9 +49,9 @@ Everything is configured with a `.env` file, and most parts can be switched on o
 
 - [Node.js](https://nodejs.org/) 22.12 or newer
 - A package manager: [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (comes with Node.js), [pnpm](https://pnpm.io/installation), or [yarn](https://yarnpkg.com/getting-started/install), whichever you prefer
-- A Discord webhook URL (and ofcourse a discord server :) )
+- A Discord webhook URL (and ofcourse a discord server :) ), if you want Discord notifications
 - A Cloudflare Turnstile secret key (or turn Turnstile off, see below)
-- SMTP details if you want confirmation mails
+- SMTP details if you want confirmation mails or email notifications
 - [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) if you'd rather run it containerized, see [running with docker](#running-with-docker)
 
 ### installation
@@ -142,7 +143,7 @@ Everything lives in `.env`, see `.env.example` for all options and their default
 
 ### feature toggles
 
-Set these to `true` or `false`.
+Set these to `true` or `false`. Discord and the two email features are fully independent, enable any combination you want.
 
 | Variable | Default | Needs when enabled |
 |---|---|---|
@@ -150,8 +151,13 @@ Set these to `true` or `false`.
 | `FEATURE_TURNSTILE` | `true` | `TURNSTILE_SECRET_KEY` |
 | `FEATURE_LINK_FILTER` | `true` | nothing |
 | `FEATURE_DISCORD_WEBHOOK` | `true` | `DISCORD_WEBHOOK_URL` |
-| `FEATURE_EMAIL_CONFIRMATION` | `false` | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` |
+| `FEATURE_EMAIL_CONFIRMATION` | `false` | SMTP settings (see below) |
 | `FEATURE_EMAIL_SIGNATURE` | `true` | nothing (only used if email confirmation is on) |
+| `FEATURE_EMAIL_NOTIFICATION` | `false` | SMTP settings (see below), `NOTIFICATION_EMAIL` |
+
+`FEATURE_EMAIL_CONFIRMATION` and `FEATURE_EMAIL_NOTIFICATION` share the same SMTP settings, so those are required if **either** one is turned on:
+
+`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
 
 ### other settings
 
@@ -167,15 +173,28 @@ Set `CORS_ORIGINS` to your own frontend domain, or the browser will block the re
 
 ### confirmation email
 
+Sent to the **visitor** who filled in the form, if `FEATURE_EMAIL_CONFIRMATION=true`.
+
 | Variable | What it does |
 |---|---|
 | `BRAND_NAME` | name shown as sender and in the signature |
 | `EMAIL_SUBJECT` | subject of the mail |
 | `EMAIL_BODY` | the message in the mail |
 
+### email notification
+
+Sent to **you** (the site owner), if `FEATURE_EMAIL_NOTIFICATION=true`. This is independent from the confirmation email and from Discord, turn on any combination you like.
+
+| Variable | What it does |
+|---|---|
+| `NOTIFICATION_EMAIL` | your address, where submissions get sent |
+| `NOTIFICATION_EMAIL_SUBJECT` | subject of the notification mail |
+
+The reply-to address is automatically set to whichever submitted field is configured as `type: "email"` in `fields.config.ts` (see below), so hitting reply in your inbox goes straight to the visitor. If no email-type field is configured, the mail still sends, just without a reply-to.
+
 ### contact form fields
 
-The fields the form accepts (and validates) are declared in `src/config/fields.config.ts`, not in `.env`. Add, remove, or edit fields there, the validation, link filter, and Discord message all adjust automatically.
+The fields the form accepts (and validates) are declared in `src/config/fields.config.ts`, not in `.env`. Add, remove, or edit fields there, the validation, link filter, Discord message, and email notification all adjust automatically.
 
 ```ts
 export const contactFields: ContactFieldOption[] = [
@@ -201,7 +220,7 @@ If you add or remove fields here, remember to update your own frontend form to m
 
 ### email signature
 
-The signature is built from these variables. Everything is optional, leave a value empty and that part is skipped. Set `FEATURE_EMAIL_SIGNATURE=false` to drop the signature completely.
+The signature is built from these variables. Everything is optional, leave a value empty and that part is skipped. Set `FEATURE_EMAIL_SIGNATURE=false` to drop the signature completely. Only used in the confirmation email, not the notification email.
 
 | Variable | What it does |
 |---|---|
@@ -218,26 +237,44 @@ The signature is built from these variables. Everything is optional, leave a val
 | `SIGNATURE_FOOTER_NOTE` | small grey note at the very bottom |
 | `SIGNATURE_ACCENT_COLOR` | link color (default `#7c3aed`) |
 
-### customizing the email template
+### customizing templates
 
-The confirmation email isn't hardcoded in TypeScript, it's two plain HTML files in `templates/`:
+Nothing about how a message is formatted is hardcoded in TypeScript, it all lives in editable files in `templates/`:
 
-| File | What it is |
-|---|---|
-| `templates/confirmation-email.html` | the full email body |
-| `templates/signature.html` | just the signature block |
+| File | What it is | Used by |
+|---|---|---|
+| `templates/confirmation-email.html` | the full confirmation email body | visitor confirmation email |
+| `templates/signature.html` | just the signature block | confirmation email |
+| `templates/discord-message.txt` | the discord message wrapper | discord webhook |
+| `templates/notification-email.txt` | the notification email wrapper | email notification to you |
 
-Both use [Mustache](https://mustache.github.io/) syntax, `{{variable}}` prints a value, `{{#variable}}...{{/variable}}` only shows that block when the variable has a value, `{{{variable}}}` prints raw HTML without escaping it (only used for the signature, which is already-safe HTML built by the app).
+All four use [Mustache](https://mustache.github.io/) syntax:
 
-To restyle the email (colors, spacing, add a paragraph, rearrange the layout), just edit these HTML files directly, no TypeScript knowledge needed. To change the actual *text* (the message body, the signature name/title/etc), use the `.env` variables above instead, that's simpler for day-to-day changes.
+- `{{variable}}` prints a value (escaped, safe for user input)
+- `{{{variable}}}` prints raw, unescaped content (only used where the app already built safe html itself, like the signature)
+- `{{#variable}}...{{/variable}}` only renders that block when the variable is truthy, used for optional parts (a logo, a tagline) and for looping
 
-> **Note:** if you use VS Code with a Statamic/Antlers extension installed, it may misinterpret the `{{# }}` Mustache syntax as its own comment syntax and grey out part of the file. This is a cosmetic editor issue only, it doesn't affect how the email renders. Disable the Antlers extension for this workspace (gear icon next to the extension → "Disable (Workspace)") if it bothers you.
+The two `.txt` templates (`discord-message.txt`, `notification-email.txt`) loop over the submitted fields with `{{#fields}}...{{/fields}}`, printing `{{label}}` and `{{value}}` for each one. For example, `discord-message.txt` looks like:
+
+```
+**New message**
+
+{{#fields}}
+**{{label}}:** {{value}}
+{{/fields}}
+```
+
+Change `**{{label}}:** {{value}}` to anything you like, drop the bold, change the separator, add extra text, no code changes needed. The actual list of fields itself still comes from `fields.config.ts`, since that's tied to validation.
+
+To restyle the confirmation email (colors, spacing, layout), edit the `.html` files directly. To change the actual *text* (subjects, body copy, signature name/title/etc), use the `.env` variables instead, that's simpler for day-to-day changes.
+
+> **Note:** if you use VS Code with a Antlers extension installed, it may misinterpret the `{{# }}` Mustache syntax in the `.html` files as its own comment syntax and grey out part of the file. This is a cosmetic editor issue only, it doesn't affect how anything renders. Disable the Antlers extension for this workspace (gear icon next to the extension → "Disable (Workspace)") if it bothers you.
 
 ## API
 
 ### POST /contact
 
-Validates the message and sends it to discord (and a confirmation mail if enabled).
+Validates the message, then sends it to whichever of these are enabled: Discord, an email notification to you, and a confirmation email to the visitor.
 
 Request body:
 
@@ -342,14 +379,14 @@ Replace `https://api.myportfolio.com/contact` with your own API URL, and the Tur
 ```
 src/
 ├── config/        env parsing, constants, feature fields, and the config object
-├── lib/           small helpers (errors, logger, html escape)
+├── lib/           small helpers (errors, logger, html escape, fields list builder)
 ├── middleware/    cors, rate limit, error handling
 ├── modules/
 │   └── contact/   filters, schema, service, controller, routes
 ├── services/      turnstile, discord and mail
 ├── app.ts         builds the express app
 └── server.ts      starts the server
-templates/         editable html email templates (mustache)
+templates/         editable html/text templates (mustache)
 tests/             vitest tests
 ```
 
