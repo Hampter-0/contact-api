@@ -37,9 +37,14 @@ function buildSignatureHtml(): string {
 
   const sig = config.signature;
 
-  const websiteDisplay = sig.websiteUrl
-    ? sig.websiteUrl.replace(/^https?:\/\//, "").toUpperCase()
-    : "";
+  let websiteDisplay = "";
+
+  if (sig.websiteUrl) {
+    websiteDisplay = sig.websiteUrl;
+  } else {
+    websiteDisplay = "";
+  }
+
 
   const hasInfoRow = Boolean(sig.addressLine1 || sig.phone || sig.websiteUrl);
   const hasFooterRow = Boolean(sig.contactEmail || sig.discordLink || sig.footerNote);
