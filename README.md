@@ -15,6 +15,8 @@ then forwards them to Discord and/or email, and optionally sends the visitor a c
 
 Everything is configured with a `.env` file, and most parts can be switched on or off without touching the code.
 
+<img src="assets/preview.gif" alt="Contact API preview" width="650px" />
+
 </div>
 
 ## features
