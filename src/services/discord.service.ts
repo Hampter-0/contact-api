@@ -1,23 +1,31 @@
+import fs from "node:fs";
+import path from "node:path";
+import Mustache from "mustache";
 import { config } from "../config";
 import { DISCORD_MAX_CONTENT_LENGTH, HTTP_TIMEOUT_MS } from "../config/constants";
-import { contactFields, type ContactSubmission } from "../config/fields.config";
+import type { ContactSubmission } from "../config/fields.config";
+import { getSubmittedFields } from "../lib/fieldsList";
 import { logger } from "../lib/logger";
 
-// builds the discord message body by looping over the configured fields,
-// in the order they're declared in fields.config.ts. fields with no
-// value (optional and left empty) are skipped.
-function buildContent(submission: ContactSubmission): string {
-  const lines: string[] = [];
+const templatesDir = path.join(__dirname, "..", "..", "templates");
 
-  for (const field of contactFields) {
-    const value = submission[field.key];
+let discordMessageTemplate: string | undefined;
 
-    if (value) {
-      lines.push(`**${field.label}:** ${value}`);
-    }
+function getDiscordMessageTemplate(): string {
+  if (!discordMessageTemplate) {
+    const filePath = path.join(templatesDir, "discord-message.txt");
+    discordMessageTemplate = fs.readFileSync(filePath, "utf-8");
   }
 
-  return `New message\n\n${lines.join("\n")}`;
+  return discordMessageTemplate;
+}
+
+// builds the discord message by rendering templates/discord-message.txt
+// with the submitted fields spliced in as loop data
+function buildContent(submission: ContactSubmission): string {
+  const fields = getSubmittedFields(submission);
+
+  return Mustache.render(getDiscordMessageTemplate(), { fields });
 }
 
 // sends the contact form details to a discord webhook.

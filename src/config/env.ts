@@ -121,6 +121,7 @@ export const env = {
   FEATURE_DISCORD_WEBHOOK: getBoolean("FEATURE_DISCORD_WEBHOOK", true),
   FEATURE_EMAIL_CONFIRMATION: getBoolean("FEATURE_EMAIL_CONFIRMATION", false),
   FEATURE_EMAIL_SIGNATURE: getBoolean("FEATURE_EMAIL_SIGNATURE", true),
+  FEATURE_EMAIL_NOTIFICATION: getBoolean("FEATURE_EMAIL_NOTIFICATION", false),
 
   // limits
   RATE_LIMIT_WINDOW_SECONDS: getNumber("RATE_LIMIT_WINDOW_SECONDS", 60),
@@ -144,6 +145,11 @@ export const env = {
   BRAND_NAME: getStringWithDefault("BRAND_NAME", "My Portfolio"),
   EMAIL_SUBJECT: getStringWithDefault("EMAIL_SUBJECT", "I received your message"),
   EMAIL_BODY: getStringWithDefault("EMAIL_BODY", "I have received your message! I'll try to reply within 48 hours :)"),
+  NOTIFICATION_EMAIL: getString("NOTIFICATION_EMAIL"),
+  NOTIFICATION_EMAIL_SUBJECT: getStringWithDefault(
+    "NOTIFICATION_EMAIL_SUBJECT",
+    "New contact form submission",
+  ),
 
   // signature
   SIGNATURE_NAME: getString("SIGNATURE_NAME"),
@@ -180,12 +186,20 @@ requireWhenEnabled(env.FEATURE_DISCORD_WEBHOOK, "FEATURE_DISCORD_WEBHOOK", [
   "DISCORD_WEBHOOK_URL",
 ]);
 
-requireWhenEnabled(env.FEATURE_EMAIL_CONFIRMATION, "FEATURE_EMAIL_CONFIRMATION", [
-  "SMTP_HOST",
-  "SMTP_PORT",
-  "SMTP_USER",
-  "SMTP_PASS",
-  "SMTP_FROM",
+// SMTP is needed if EITHER the confirmation email or the notification
+// email is turned on, since they share the same mail transport
+if (env.FEATURE_EMAIL_CONFIRMATION || env.FEATURE_EMAIL_NOTIFICATION) {
+  requireWhenEnabled(true, "FEATURE_EMAIL_CONFIRMATION or FEATURE_EMAIL_NOTIFICATION", [
+    "SMTP_HOST",
+    "SMTP_PORT",
+    "SMTP_USER",
+    "SMTP_PASS",
+    "SMTP_FROM",
+  ]);
+}
+
+requireWhenEnabled(env.FEATURE_EMAIL_NOTIFICATION, "FEATURE_EMAIL_NOTIFICATION", [
+  "NOTIFICATION_EMAIL",
 ]);
 
 if (errors.length > 0) {

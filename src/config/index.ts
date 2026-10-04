@@ -14,6 +14,7 @@ export const config = {
     discordWebhook: env.FEATURE_DISCORD_WEBHOOK,
     emailConfirmation: env.FEATURE_EMAIL_CONFIRMATION,
     emailSignature: env.FEATURE_EMAIL_SIGNATURE,
+    emailNotification: env.FEATURE_EMAIL_NOTIFICATION,
   },
 
   rateLimit: {
@@ -42,6 +43,11 @@ export const config = {
     brandName: env.BRAND_NAME,
     subject: env.EMAIL_SUBJECT,
     body: env.EMAIL_BODY,
+  },
+
+  notification: {
+    email: env.NOTIFICATION_EMAIL,
+    subject: env.NOTIFICATION_EMAIL_SUBJECT,
   },
 
   signature: {
