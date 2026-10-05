@@ -1,5 +1,0 @@
-New contact form submission
-
-{{#fields}}
-{{label}}: {{value}}
-{{/fields}}
