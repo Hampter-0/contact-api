@@ -248,7 +248,7 @@ Nothing about how a message is formatted is hardcoded in TypeScript, it all live
 | `templates/confirmation-email.html` | the full confirmation email body | visitor confirmation email |
 | `templates/signature.html` | just the signature block | confirmation email |
 | `templates/discord-message.txt` | the discord message wrapper | discord webhook |
-| `templates/notification-email.txt` | the notification email wrapper | email notification to you |
+| `templates/notification-email.html` | the notification email body | email notification to you |
 
 All four use [Mustache](https://mustache.github.io/) syntax:
 
@@ -256,7 +256,7 @@ All four use [Mustache](https://mustache.github.io/) syntax:
 - `{{{variable}}}` prints raw, unescaped content (only used where the app already built safe html itself, like the signature)
 - `{{#variable}}...{{/variable}}` only renders that block when the variable is truthy, used for optional parts (a logo, a tagline) and for looping
 
-The two `.txt` templates (`discord-message.txt`, `notification-email.txt`) loop over the submitted fields with `{{#fields}}...{{/fields}}`, printing `{{label}}` and `{{value}}` for each one. For example, `discord-message.txt` looks like:
+`discord-message.txt` and `notification-email.html` both loop over the submitted fields with `{{#fields}}...{{/fields}}`, discord stays plain text/markdown since discord doesn't render html, the notification email is a real html template so you can add images, tables, or any other styling, same as the confirmation email. printing `{{label}}` and `{{value}}` for each one. For example, `discord-message.txt` looks like:
 
 ```
 **New message**

@@ -14,7 +14,7 @@ let notificationEmailTemplate: string | undefined;
 
 function getNotificationEmailTemplate(): string {
   if (!notificationEmailTemplate) {
-    const filePath = path.join(templatesDir, "notification-email.txt");
+    const filePath = path.join(templatesDir, "notification-email.html");
     notificationEmailTemplate = fs.readFileSync(filePath, "utf-8");
   }
 
@@ -59,7 +59,7 @@ export async function sendConfirmationEmail(toEmail: string): Promise<void> {
   }
 }
 
-// sends a plain-text summary of the submission to the site owner's own
+// sends an html summary of the submission to the site owner's own
 // inbox, with reply-to set to the visitor (if an email field is
 // configured), so hitting reply goes straight to them. does nothing if
 // the feature is off. runs in the background, errors are logged but
@@ -79,15 +79,16 @@ export async function sendNotificationEmail(submission: ContactSubmission): Prom
   try {
     const transporter = createTransporter();
     const fields = getSubmittedFields(submission);
-    const text = Mustache.render(getNotificationEmailTemplate(), { fields });
+    const subject = config.notification.subject;
+    const html = Mustache.render(getNotificationEmailTemplate(), { fields, subject });
     const replyTo = findSubmitterEmail(submission);
 
     const info = await transporter.sendMail({
       from: `"${config.email.brandName}" <${config.smtp.from}>`,
       to: notifyEmail,
       replyTo,
-      subject: config.notification.subject,
-      text,
+      subject,
+      html,
     });
 
     logger.info("notification email sent", info.messageId);
