@@ -3,6 +3,7 @@ import path from "node:path";
 import Mustache from "mustache";
 import { config } from "../config";
 import { DISCORD_MAX_CONTENT_LENGTH, HTTP_TIMEOUT_MS } from "../config/constants";
+import { contactFields } from "../config/fields.config";
 import type { ContactSubmission } from "../config/fields.config";
 import { getSubmittedFields } from "../lib/fieldsList";
 import { logger } from "../lib/logger";
@@ -23,7 +24,11 @@ function getDiscordMessageTemplate(): string {
 // builds the discord message by rendering templates/discord-message.txt
 // with the submitted fields spliced in as loop data
 function buildContent(submission: ContactSubmission): string {
-  const fields = getSubmittedFields(submission);
+  const emailLabel = contactFields.find((field) => field.type === "email")?.label;
+  const fields = getSubmittedFields(submission).map((field) => ({
+    ...field,
+    isEmail: field.label === emailLabel,
+  }));
 
   return Mustache.render(getDiscordMessageTemplate(), { fields });
 }

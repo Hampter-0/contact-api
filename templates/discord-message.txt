@@ -1,5 +1,5 @@
 **New message**
 
 {{#fields}}
-**{{label}}:** {{value}}
+**{{label}}:** {{#isEmail}}[{{value}}](mailto:{{value}}){{/isEmail}}{{^isEmail}}{{value}}{{/isEmail}}
 {{/fields}}
