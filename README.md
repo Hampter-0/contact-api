@@ -13,7 +13,7 @@
 Takes submissions from your portfolio, validates and protects them,
 then forwards them to Discord and/or email, and optionally sends the visitor a confirmation email.
 
-Everything is configured with a `.env` file, and most parts can be switched on or off without touching the code.
+Everything is configured with a `.env` file, and most parts can be switched on or off.
 
 <img src="assets/preview.gif" alt="Contact API preview" width="650px" />
 
@@ -30,7 +30,7 @@ Everything is configured with a `.env` file, and most parts can be switched on o
 - CORS protection
 - Confirmation email with an optional signature
 - Editable email and message templates
-- Configurable form fields, add or remove fields without touching validation code
+- Configurable form fields, add or remove fields.
 - All of it toggleable through `.env`
 
 ## tech used
@@ -266,7 +266,7 @@ All four use [Mustache](https://mustache.github.io/) syntax:
 {{/fields}}
 ```
 
-Change `**{{label}}:** {{value}}` to anything you like, drop the bold, change the separator, add extra text, no code changes needed. The actual list of fields itself still comes from `fields.config.ts`, since that's tied to validation.
+Change `**{{label}}:** {{value}}` to anything you like, drop the bold, change the separator, add extra text ect. The actual list of fields itself still comes from `fields.config.ts`, since that's tied to validation.
 
 To restyle the confirmation email (colors, spacing, layout), edit the `.html` files directly. To change the actual *text* (subjects, body copy, signature name/title/etc), use the `.env` variables instead, that's simpler for day-to-day changes.
 
