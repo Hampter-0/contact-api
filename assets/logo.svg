@@ -1,0 +1,44 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="250 185 630 405"
+  role="img"
+  aria-labelledby="title description"
+>
+  <defs>
+    <linearGradient
+      id="pigeon"
+      x1="310"
+      y1="520"
+      x2="820"
+      y2="245"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop stop-color="#7357e8" />
+      <stop offset=".52" stop-color="#457fec" />
+      <stop offset="1" stop-color="#33c1d8" />
+    </linearGradient>
+
+    <mask id="pigeon-cutout">
+      <rect width="1200" height="800" fill="black" />
+      <path
+        d="m821 316-43-25c-15-49-64-79-116-69-45 9-76 50-75 97-64-5-124 10-177 42-50 30-89 68-124 109l124-27-80 88 138-53c44 51 114 76 181 63 75-15 130-75 138-147 3-24-1-44-7-60Z"
+        fill="white"
+      />
+      <circle cx="710" cy="267" r="8" fill="black" />
+    </mask>
+  </defs>
+
+  <g mask="url(#pigeon-cutout)">
+    <rect x="250" y="185" width="630" height="405" fill="url(#pigeon)" />
+  </g>
+
+  <path
+    d="m476 397 85 48 88-76"
+    fill="none"
+    stroke="#101115"
+    stroke-width="14"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    transform="rotate(-8 562 410)"
+  />
+</svg>

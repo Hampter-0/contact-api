@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/logo.svg" alt="contact-api logo" width="380" />
+
 # contact-api
 
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
