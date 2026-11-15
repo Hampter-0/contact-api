@@ -309,6 +309,10 @@ Errors come back as `{ "error": "..." }`:
 | `429` | too many requests |
 | `500` | something broke on the server |
 
+### GET /health
+
+Simple liveness check for uptime monitors and status pages. Returns `200` with `{ "status": "ok" }` as long as the server is running. It doesn't touch Discord, SMTP or Turnstile and isn't rate limited.
+
 ## frontend example
 
 A minimal HTML form that posts to `/contact`, including the Turnstile widget:
