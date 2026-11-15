@@ -4,6 +4,7 @@ import { corsMiddleware } from "./middleware/cors";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 import { contactRouter } from "./modules/contact/contact.routes";
 import { JSON_BODY_LIMIT } from "./config/constants";
+import { healthRouter } from "./modules/health/health.routes";
 
 export function createApp() {
   const app = express();
@@ -16,6 +17,7 @@ export function createApp() {
   app.use(express.json({ limit: JSON_BODY_LIMIT }));
 
   app.use(contactRouter);
+  app.use(healthRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
